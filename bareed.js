@@ -15,13 +15,13 @@ class Point {
     this.y = y;
   }
 
-  distanceTo = point => {
+  distanceTo = (point) => {
     let xDelta = this.x - point.x;
     let yDelta = this.y - point.y;
     return Math.sqrt(xDelta * xDelta + yDelta * yDelta); // PYTHAGORAS!
   };
 
-  equals = point => point.x === this.x && point.y === this.y;
+  equals = (point) => point.x === this.x && point.y === this.y;
 
   static randomPoint = (maxX, maxY) => {
     let x = Math.random() * (maxX || 100);
@@ -29,7 +29,10 @@ class Point {
     return new Point(x, y);
   };
 }
-
+//let point = new Point(x, y);
+let pointB = Point.randomPoint();
+console.log(pointB);
+console.log(pointB.distanceTo({ x: 3, y: 4 }));
 /**********************************************************
  * Wallet: keeps track of money
  *
@@ -43,13 +46,25 @@ class Point {
  **********************************************************/
 class Wallet {
   // implement Wallet!
-  constructor(money = 0) {}
+  constructor(money = 0) {
+    this.money = money;
+  }
 
-  credit = amount => {};
+  credit = (amount) => {
+    if (amount > 0) {
+      return (this.money = this.money + amount);
+    }
+  };
 
-  debit = amount => {};
+  debit = (amount) => {
+    return (this.money = this.money - amount);
+  };
 }
-
+let wallet1 = new Wallet(120);
+wallet1.credit(5);
+wallet1.debit(3);
+console.log(wallet1.credit(5));
+console.log(wallet1.debit(3));
 /**********************************************************
  * Person: defines a person with a name (and feelings)
  *
@@ -63,8 +78,29 @@ class Wallet {
  **********************************************************/
 class Person {
   // implement Person!
+  name = "Turki";
+  location = new Point();
+  constructor(name, x, y, wallet = 0) {
+    this.name = name;
+    this.location = new Point(x, y);
+    this.wallet = wallet;
+  }
+  moveTo(point) {
+    this.location = point;
+  }
 }
-
+let p1 = new Person("Turki", 1, 3);
+console.log(p1);
+console.log(p1.moveTo(pointB));
+console.log(p1);
+// let a = [1, 2, 3, 4];
+// let b = [...a];
+// let c = a;
+// b.pop();
+// console.log(a);
+// c.pop();
+// console.log(b);
+// console.log(a);
 /**********************************************************
  * Vendor: defines a vendor
  * Subclasses Person
@@ -80,8 +116,17 @@ class Person {
  *
  * new vendor = new Vendor(name, x, y);
  **********************************************************/
-class Vendor {
+class Vendor extends Person {
   // implement Vendor!
+  constructor(name, location, wallet, range = 5, price = 1) {
+    super(name, location, wallet);
+    this.range = range;
+    this.price = price;
+  }
+
+  sellTo(customer, numberOfIceCreams) {
+    if (customer.location) this.location = customer.location;
+  }
 }
 
 /**********************************************************
@@ -104,7 +149,7 @@ class Customer {
   // implement Customer!
 }
 
-export { Point, Wallet, Person, Customer, Vendor };
+// export { Point, Wallet, Person, Customer, Vendor };
 
 /***********************************************************
  * If you want examples of how to use the
