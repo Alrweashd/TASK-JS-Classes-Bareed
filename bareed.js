@@ -32,7 +32,7 @@ class Point {
 //let point = new Point(x, y);
 let pointB = Point.randomPoint();
 console.log(pointB);
-console.log(pointB.distanceTo({ x: 3, y: 4 }));
+console.log("hereeee", pointB.distanceTo({ x: 3, y: 4 }));
 /**********************************************************
  * Wallet: keeps track of money
  *
@@ -78,20 +78,21 @@ console.log(wallet1.debit(3));
  **********************************************************/
 class Person {
   // implement Person!
-  name = "Turki";
-  location = new Point();
-  constructor(name, x, y, wallet = 0) {
+  //name = "Turki";
+  //location = new Point();
+  constructor(name, location, wallet = 0) {
     this.name = name;
-    this.location = new Point(x, y);
+    this.location = new Point(location.x, location.y);
     this.wallet = wallet;
   }
   moveTo(point) {
-    this.location = point;
+    this.location.x = point.x;
+    this.location.y = point.y;
   }
 }
-let p1 = new Person("Turki", 1, 3);
-console.log(p1);
-console.log(p1.moveTo(pointB));
+let p1 = new Person("Turki", { x: 1, y: 3 });
+console.log("heree 2", p1);
+//console.log(p1.moveTo({ x: pointB.x, y: pointB.y }));
 console.log(p1);
 // let a = [1, 2, 3, 4];
 // let b = [...a];
