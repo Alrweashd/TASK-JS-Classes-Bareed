@@ -31,8 +31,9 @@ class Point {
 }
 //let point = new Point(x, y);
 let pointB = Point.randomPoint();
-console.log(pointB);
-console.log("hereeee", pointB.distanceTo({ x: 3, y: 4 }));
+//console.log(pointB);
+let pointA = Point.randomPoint();
+//console.log("hereeee", pointB.distanceTo(pointA));
 /**********************************************************
  * Wallet: keeps track of money
  *
@@ -63,8 +64,8 @@ class Wallet {
 let wallet1 = new Wallet(120);
 wallet1.credit(5);
 wallet1.debit(3);
-console.log(wallet1.credit(5));
-console.log(wallet1.debit(3));
+//console.log(wallet1.credit(5));
+//console.log(wallet1.debit(3));
 /**********************************************************
  * Person: defines a person with a name (and feelings)
  *
@@ -80,9 +81,9 @@ class Person {
   // implement Person!
   //name = "Turki";
   //location = new Point();
-  constructor(name, location, wallet = 0) {
+  constructor(name, x, y, wallet = 0) {
     this.name = name;
-    this.location = new Point(location.x, location.y);
+    this.location = new Point(x, y);
     this.wallet = wallet;
   }
   moveTo(point) {
@@ -90,10 +91,10 @@ class Person {
     this.location.y = point.y;
   }
 }
-let p1 = new Person("Turki", { x: 1, y: 3 });
-console.log("heree 2", p1);
-//console.log(p1.moveTo({ x: pointB.x, y: pointB.y }));
-console.log(p1);
+let p1 = new Person("Turki", 1, 3);
+//console.log("heree 2", p1);
+//console.log(p1.moveTo(pointA));
+//console.log(p1);
 // let a = [1, 2, 3, 4];
 // let b = [...a];
 // let c = a;
@@ -118,15 +119,28 @@ console.log(p1);
  * new vendor = new Vendor(name, x, y);
  **********************************************************/
 class Vendor extends Person {
+  wallet = 0;
+  range = 5;
+  price = 1;
   // implement Vendor!
-  constructor(name, location, wallet, range = 5, price = 1) {
-    super(name, location, wallet);
-    this.range = range;
-    this.price = price;
+  constructor(name, x, y) {
+    super(name, x, y);
   }
 
   sellTo(customer, numberOfIceCreams) {
-    if (customer.location) this.location = customer.location;
+    //5
+    let purchase = numberOfIceCreams * this.price;
+    // if (
+    //   this.location.distanceTo(customer.location) <= 5 &&
+    //   customer.wallet >= purchase)
+    {
+      //add to vendor's wallet
+      this.wallet = this.wallet + purchase;
+      //dedicate from customer
+      customer.wallet = customer.wallet - purchase;
+      //move to customer's point
+      this.location = this.moveTo(customer.location);
+    }
   }
 }
 
@@ -146,8 +160,33 @@ class Vendor extends Person {
  *
  * new customer = new Customer(name, x, y);
  **********************************************************/
-class Customer {
+class Customer extends Person {
   // implement Customer!
+  wallet = 10;
+  constructor(name, x, y) {
+    super(name, x, y);
+    this.location = new Point(x, y);
+    //this.range = range;
+    //this.price = price;
+  }
+  _isInRange(vendor) {
+    let point = vendor.location;
+    if (this.location.distanceTo(point) <= 5) return true;
+    else false;
+  }
+  _haveEnoughMoney(vendor, numberOfIceCreams) {
+    let purchase = numberOfIceCreams * vendor.price;
+    if (this.wallet >= purchase) return true;
+    else false;
+  }
+  requestIceCream(vendor, numberOfIceCreams) {
+    if (
+      this._isInRange(vendor) &&
+      this._haveEnoughMoney(vendor, numberOfIceCreams)
+    ) {
+      vendor.sellTo(this, numberOfIceCreams);
+    }
+  }
 }
 
 // export { Point, Wallet, Person, Customer, Vendor };
@@ -157,3 +196,27 @@ class Customer {
  * these classes and how to test your code manually,
  * check out the README.md file
  ***********************************************************/
+let vendorAsis = new Vendor("Asis", 10, 10); // create a new vendor named Asis at location (10,10)
+let nearbyCustomer = new Customer("MishMish", 11, 11); // create a new customer named MishMish at location (11,11)
+let distantCustomer = new Customer("Hamsa", 1000, 1000); // create a new customer named Hamsa at location (1000,1000)
+let brokeCustomer = new Customer("Maskeen", 12, 12); // create a new customer named Maskeen at location (12,12)
+
+brokeCustomer.wallet.money = 0; // steal all of Maskeen's money
+
+nearbyCustomer.requestIceCream(vendorAsis, 10); // ask to buy 10 ice creams from Asis
+// money was transferred from MishMish to Asis
+nearbyCustomer.wallet.money; // 0 left
+console.log(nearbyCustomer.wallet);
+vendorAsis.wallet.money; // 10
+console.log(vendorAsis.wallet);
+// Asis moved to MishMish's location
+vendorAsis.location; // { x: 11, y: 11 }
+
+distantCustomer.requestIceCream(vendorAsis, 10); // ask to buy 10 ice creams from Asis
+// no money was transferred because the request failed - Hamsa is too far away
+distantCustomer.wallet.money; // 10 left
+vendorAsis.wallet.money; // still only 10
+// Asis didn't move
+vendorAsis.location; // { x: 11, y: 11 }
+
+console.log(vendorAsis.location);
