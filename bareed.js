@@ -81,10 +81,10 @@ class Person {
   // implement Person!
   //name = "Turki";
   //location = new Point();
-  constructor(name, x, y, wallet = 0) {
+  constructor(name, x, y, money = 0) {
     this.name = name;
     this.location = new Point(x, y);
-    this.wallet = wallet;
+    this.wallet = new Wallet(money);
   }
   moveTo(point) {
     this.location.x = point.x;
@@ -119,12 +119,12 @@ let p1 = new Person("Turki", 1, 3);
  * new vendor = new Vendor(name, x, y);
  **********************************************************/
 class Vendor extends Person {
-  wallet = 0;
   range = 5;
   price = 1;
   // implement Vendor!
   constructor(name, x, y) {
     super(name, x, y);
+    this.location = new Point(x, y);
   }
 
   sellTo(customer, numberOfIceCreams) {
@@ -135,11 +135,11 @@ class Vendor extends Person {
     //   customer.wallet >= purchase)
     {
       //add to vendor's wallet
-      this.wallet = this.wallet + purchase;
+      this.wallet.credit(purchase);
       //dedicate from customer
-      customer.wallet = customer.wallet - purchase;
+      customer.wallet.debit(purchase);
       //move to customer's point
-      this.location = this.moveTo(customer.location);
+      this.moveTo(customer.location);
     }
   }
 }
@@ -162,16 +162,17 @@ class Vendor extends Person {
  **********************************************************/
 class Customer extends Person {
   // implement Customer!
-  wallet = 10;
-  constructor(name, x, y) {
-    super(name, x, y);
+
+  constructor(name, x, y, wallet) {
+    super(name, x, y, wallet);
+    this.wallet.money = 10;
     this.location = new Point(x, y);
     //this.range = range;
     //this.price = price;
   }
   _isInRange(vendor) {
     let point = vendor.location;
-    if (this.location.distanceTo(point) <= 5) return true;
+    if (this.location.distanceTo(point) <= vendor.range) return true;
     else false;
   }
   _haveEnoughMoney(vendor, numberOfIceCreams) {
@@ -217,6 +218,7 @@ distantCustomer.requestIceCream(vendorAsis, 10); // ask to buy 10 ice creams fro
 distantCustomer.wallet.money; // 10 left
 vendorAsis.wallet.money; // still only 10
 // Asis didn't move
+
 vendorAsis.location; // { x: 11, y: 11 }
 
 console.log(vendorAsis.location);
