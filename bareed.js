@@ -53,12 +53,12 @@ class Wallet {
 
   credit = (amount) => {
     if (amount > 0) {
-      return (this.money = this.money + amount);
+      this.money = this.money + amount;
     }
   };
 
   debit = (amount) => {
-    return (this.money = this.money - amount);
+    this.money = this.money - amount;
   };
 }
 let wallet1 = new Wallet(120);
@@ -78,9 +78,6 @@ wallet1.debit(3);
  * let person = new Person(name, x, y);
  **********************************************************/
 class Person {
-  // implement Person!
-  //name = "Turki";
-  //location = new Point();
   constructor(name, x, y, money = 0) {
     this.name = name;
     this.location = new Point(x, y);
@@ -92,17 +89,7 @@ class Person {
   }
 }
 let p1 = new Person("Turki", 1, 3);
-//console.log("heree 2", p1);
-//console.log(p1.moveTo(pointA));
-//console.log(p1);
-// let a = [1, 2, 3, 4];
-// let b = [...a];
-// let c = a;
-// b.pop();
-// console.log(a);
-// c.pop();
-// console.log(b);
-// console.log(a);
+
 /**********************************************************
  * Vendor: defines a vendor
  * Subclasses Person
@@ -128,19 +115,14 @@ class Vendor extends Person {
   }
 
   sellTo(customer, numberOfIceCreams) {
-    //5
     let purchase = numberOfIceCreams * this.price;
-    // if (
-    //   this.location.distanceTo(customer.location) <= 5 &&
-    //   customer.wallet >= purchase)
-    {
-      //add to vendor's wallet
-      this.wallet.credit(purchase);
-      //dedicate from customer
-      customer.wallet.debit(purchase);
-      //move to customer's point
-      this.moveTo(customer.location);
-    }
+
+    //add to vendor's wallet
+    this.wallet.credit(purchase);
+    //dedicate from customer
+    customer.wallet.debit(purchase);
+    //move to customer's point
+    this.moveTo(customer.location);
   }
 }
 
@@ -167,8 +149,6 @@ class Customer extends Person {
     super(name, x, y, wallet);
     this.wallet.money = 10;
     this.location = new Point(x, y);
-    //this.range = range;
-    //this.price = price;
   }
   _isInRange(vendor) {
     let point = vendor.location;
@@ -177,7 +157,7 @@ class Customer extends Person {
   }
   _haveEnoughMoney(vendor, numberOfIceCreams) {
     let purchase = numberOfIceCreams * vendor.price;
-    if (this.wallet >= purchase) return true;
+    if (this.wallet.money >= purchase) return true;
     else false;
   }
   requestIceCream(vendor, numberOfIceCreams) {
@@ -207,18 +187,55 @@ brokeCustomer.wallet.money = 0; // steal all of Maskeen's money
 nearbyCustomer.requestIceCream(vendorAsis, 10); // ask to buy 10 ice creams from Asis
 // money was transferred from MishMish to Asis
 nearbyCustomer.wallet.money; // 0 left
-console.log(nearbyCustomer.wallet);
+console.log(
+  "Case 1 \n******************************\n nearbyCustomer.wallet.money: ",
+  nearbyCustomer.wallet.money
+);
 vendorAsis.wallet.money; // 10
-console.log(vendorAsis.wallet);
+console.log(
+  "Case 1 \n******************************\n vendorAsis.wallet.money: ",
+  vendorAsis.wallet.money
+);
 // Asis moved to MishMish's location
 vendorAsis.location; // { x: 11, y: 11 }
+console.log(
+  "Case 1 \n******************************\n vendorAsis.location: ",
+  vendorAsis.location
+);
 
 distantCustomer.requestIceCream(vendorAsis, 10); // ask to buy 10 ice creams from Asis
 // no money was transferred because the request failed - Hamsa is too far away
 distantCustomer.wallet.money; // 10 left
+console.log(
+  "Case 2 \n******************************\n distantCustomer.wallet.money: ",
+  distantCustomer.wallet.money
+);
+vendorAsis.wallet.money; // still only 10
+console.log(
+  "Case 2 \n******************************\n vendorAsis.wallet.money: ",
+  vendorAsis.wallet.money
+);
+// Asis didn't move
+vendorAsis.location; // { x: 11, y: 11 }
+console.log(
+  "Case 2 \n******************************\n vendorAsis.location: ",
+  vendorAsis.location
+);
+brokeCustomer.requestIceCream(vendorAsis, 1); // ask to buy 1 ice creams from Asis
+// no money was transferred because the request failed - Maskeen doesn't have enough money to buy even one ice cream :(
+brokeCustomer.wallet.money; // 0
+console.log(
+  "Case 3 \n******************************\n brokeCustomer.wallet.money:",
+  brokeCustomer.wallet.money
+);
 vendorAsis.wallet.money; // still only 10
 // Asis didn't move
-
+console.log(
+  "Case 3 \n******************************\n vendorAsis.wallet.money: ",
+  vendorAsis.wallet.money
+);
 vendorAsis.location; // { x: 11, y: 11 }
-
-console.log(vendorAsis.location);
+console.log(
+  "Case 3 \n******************************\n vendorAsis.location: ",
+  vendorAsis.location
+);
